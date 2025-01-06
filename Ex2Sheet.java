@@ -134,37 +134,42 @@ public class Ex2Sheet implements Sheet {
             return ans;
         }
         if (ans.matches(formulaRegex)) {
-           //is a formula so it needs to be calculated
+            //is a formula so it needs to be calculated
         }
 
         return ans;
     }
 
-    public double computeForm(String formula)
+    public boolean isNumber(String s)
     {
+        return s.matches("[^[-+]?\\d+(\\.\\d+)?$]");
+    }
+
+    public double computeFormula(String formula)
+    {
+
+        return 0;
+    }
+
+    public double cutParentheses(String formula) {
         double ans = 0;
         int startIndex = 0;
         int endIndex = 0;
-        String[] formulaParts;
-
-        while (formula.contains("(") && formula.contains(")")
-        {
-            for (int i = 0; i < formula.length(); i++)
-            {
-                if(formula.charAt(i) == '(')
-                {
-                    startIndex = i+1;
+        String[] formulaParts = new String[10];
+////////TODO replace any position string "A14" with evaL for a specific coordinate
+        while (formula.contains("(") && formula.contains(")")) {
+            for (int i = 0; i < formula.length(); i++) {
+                if (formula.charAt(i) == '(') {
+                    startIndex = i;
                 }
             }
-            for (int i = startIndex; i < formula.length(); i++)
-            {
-                if(formula.charAt(i) == '(')
-                {
-                    endIndex = i;
+            for (int i = startIndex; i < formula.length(); i++) {
+                if (formula.charAt(i) == ')') {
+                    endIndex = i+1;
                     break;
                 }
             }
-        formulaParts[0]=formula.substring(startIndex, endIndex);
+            formulaParts[0] = formula.substring(startIndex, endIndex);
         }
 
         return ans;
