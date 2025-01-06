@@ -120,15 +120,54 @@ public class Ex2Sheet implements Sheet {
         /////////////////////
     }
 
+    String formulaRegex = "^=\\s*([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\))([+\\-*/]([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\)))*$";
+    String coordRegex = "^[A-Z]+[1-9]\\d*$";
+
     @Override
     public String eval(int x, int y) {
-        String ans = null;
-        if (get(x, y) != null) {
-            ans = get(x, y).toString();
-        }
-        // Add your code here
 
-        /////////////////////
+        Cell c = get(x, y);
+        String ans = null;
+        if (c != null) {
+            ans = c.toString();
+        } else {
+            return ans;
+        }
+        if (ans.matches(formulaRegex)) {
+           //is a formula so it needs to be calculated
+        }
+
         return ans;
     }
+
+    public double computeForm(String formula)
+    {
+        double ans = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+        String[] formulaParts;
+
+        while (formula.contains("(") && formula.contains(")")
+        {
+            for (int i = 0; i < formula.length(); i++)
+            {
+                if(formula.charAt(i) == '(')
+                {
+                    startIndex = i+1;
+                }
+            }
+            for (int i = startIndex; i < formula.length(); i++)
+            {
+                if(formula.charAt(i) == '(')
+                {
+                    endIndex = i;
+                    break;
+                }
+            }
+        formulaParts[0]=formula.substring(startIndex, endIndex);
+        }
+
+        return ans;
+    }
+
 }
