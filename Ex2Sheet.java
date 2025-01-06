@@ -1,5 +1,8 @@
 package assignments.ex2;
+
+import java.util.Dictionary;
 import java.io.IOException;
+import java.util.Hashtable;
 // Add your documentation below:
 
 public class Ex2Sheet implements Sheet {
@@ -9,13 +12,14 @@ public class Ex2Sheet implements Sheet {
     // ///////////////////
     public Ex2Sheet(int x, int y) {
         table = new SCell[x][y];
-        for(int i=0;i<x;i=i+1) {
-            for(int j=0;j<y;j=j+1) {
+        for (int i = 0; i < x; i = i + 1) {
+            for (int j = 0; j < y; j = j + 1) {
                 table[i][j] = new SCell("");
             }
         }
         eval();
     }
+
     public Ex2Sheet() {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
     }
@@ -25,8 +29,10 @@ public class Ex2Sheet implements Sheet {
         String ans = Ex2Utils.EMPTY_CELL;
         // Add your code here
 
-        Cell c = get(x,y);
-        if(c!=null) {ans = c.toString();}
+        Cell c = get(x, y);
+        if (c != null) {
+            ans = c.toString();
+        }
 
         /////////////////////
         return ans;
@@ -40,9 +46,25 @@ public class Ex2Sheet implements Sheet {
     @Override
     public Cell get(String cords) {
         Cell ans = null;
-        // Add your code here
 
-        /////////////////////
+        //format validation
+        if (!cords.matches("[A-Z]+\\d+")) {
+            System.out.println("invalid input");
+            return ans;
+        }
+
+        char xChar = cords.charAt(0);
+        int x = xChar - 64;
+        if (x <= 0 || x > 26) {
+            System.out.println("invalid input");
+            return ans;
+        }
+
+        //split the input to letter and number
+        String[] parts = cords.split("(?<=\\D)(?=\\d)");
+        int y = Integer.parseInt(parts[1]);
+        ans = get(x, y);
+
         return ans;
     }
 
@@ -50,10 +72,12 @@ public class Ex2Sheet implements Sheet {
     public int width() {
         return table.length;
     }
+
     @Override
     public int height() {
         return table[0].length;
     }
+
     @Override
     public void set(int x, int y, String s) {
         Cell c = new SCell(s);
@@ -62,6 +86,7 @@ public class Ex2Sheet implements Sheet {
 
         /////////////////////
     }
+
     @Override
     public void eval() {
         int[][] dd = depth();
@@ -72,7 +97,7 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public boolean isIn(int xx, int yy) {
-        boolean ans = xx>=0 && yy>=0;
+        boolean ans = xx >= 0 && yy >= 0;
         // Add your code here
 
         /////////////////////
@@ -105,10 +130,12 @@ public class Ex2Sheet implements Sheet {
     @Override
     public String eval(int x, int y) {
         String ans = null;
-        if(get(x,y)!=null) {ans = get(x,y).toString();}
+        if (get(x, y) != null) {
+            ans = get(x, y).toString();
+        }
         // Add your code here
 
         /////////////////////
         return ans;
-        }
+    }
 }
