@@ -27,14 +27,12 @@ public class Ex2Sheet implements Sheet {
     @Override
     public String value(int x, int y) {
         String ans = Ex2Utils.EMPTY_CELL;
-        // Add your code here
 
         Cell c = get(x, y);
         if (c != null) {
             ans = c.toString();
         }
 
-        /////////////////////
         return ans;
     }
 
@@ -82,9 +80,6 @@ public class Ex2Sheet implements Sheet {
     public void set(int x, int y, String s) {
         Cell c = new SCell(s);
         table[x][y] = c;
-        // Add your code here
-
-        /////////////////////
     }
 
     @Override
@@ -98,9 +93,7 @@ public class Ex2Sheet implements Sheet {
     @Override
     public boolean isIn(int xx, int yy) {
         boolean ans = xx >= 0 && yy >= 0;
-        // Add your code here
 
-        /////////////////////
         return ans;
     }
 

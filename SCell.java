@@ -27,9 +27,7 @@ public class SCell implements Cell {
 
     @Override
 public void setData(String s) {
-        // Add your code here
         line = s;
-        /////////////////////
     }
     @Override
     public String getData() {
