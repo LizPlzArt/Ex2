@@ -1,14 +1,14 @@
 package assignments.ex2;
 
-import java.util.Dictionary;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 // Add your documentation below:
 
 public class Ex2Sheet implements Sheet {
-    private Cell[][] table;
+    private static Cell[][] table;
 
-    char[] supportedOperators = {'+', '-', '*', '/'};
+    static char[] supportedOperators = {'+', '-', '*', '/'};
 
     public Ex2Sheet(int x, int y) {
         table = new SCell[x][y];
@@ -83,14 +83,6 @@ public class Ex2Sheet implements Sheet {
     }
 
     @Override
-    public void eval() {
-        int[][] dd = depth();
-        // Add your code here
-
-        // ///////////////////
-    }
-
-    @Override
     public boolean isIn(int xx, int yy) {
         boolean ans = xx >= 0 && yy >= 0;
 
@@ -120,28 +112,93 @@ public class Ex2Sheet implements Sheet {
         /////////////////////
     }
 
-    String formulaRegex = "^=\\s*([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\))([+\\-*/]([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\)))*$";
-    String coordRegex = "^[A-Z]+[1-9]\\d*$";
+
 
     @Override
-    public String eval(int x, int y) {
-
+    public String eval(int x, int y)
+    {
         Cell c = get(x, y);
-        String ans = null;
-        if (c != null) {
-            ans = c.toString();
-        } else {
+        return eval(c);
+    }
+
+    public String eval(Cell c)
+    {
+        String ans = "";
+
+        if (c != null)
+        {
+            ans = c.getData();
+        }
+        if (isFormula(ans))
+        {
+            return eval(ans);
+        }
+        if (isCoordinate(ans))
+        {
+            return replaceCoord(ans);
+        }
+        else
+        {
             return ans;
         }
-        if (ans.matches(formulaRegex)) {
-            //is a formula so it needs to be calculated
-        }
 
+    }
+
+    public String eval(String formula)
+    {
+        String ans = formula;
+        ans = replaceCoord(ans);
+        ans = cutParentheses(ans);
+        ans = String.valueOf(computeFormula(ans));
+        return ans;
+
+    }
+
+    /////TODO after I finish the String eval method
+    @Override
+    public void eval() {
+        int[][] dd = depth();
+        // Add your code here
+
+        // ///////////////////
+    }
+
+    public static boolean isNumber(String s) {
+        return s.matches("^-?\\d+(\\.\\d+)?$");
+    }
+
+    public static boolean isCoordinate(String s)
+    {
+        return s.matches("\\b[A-Z]+[0-9]+\\b");
+    }
+
+    public boolean isText(String s)
+    {
+        boolean ans = true;
+        if(Ex2Sheet.isNumber(s))
+        {
+            ans=false;
+        }
+        else if (Ex2Sheet.isCoordinate(s))
+        {
+            ans=false;
+        }
+        else if(Ex2Sheet.isFormula(s))
+        {
+            ans=false;
+        }
         return ans;
     }
 
-    public boolean isNumber(String s) {
-        return s.matches("[^[-+]?\\d+(\\.\\d+)?$]");
+    public static boolean isFormula(String formula)
+    {
+        boolean ans= false;
+        String formulaRegex = "^=\\s*([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\))([+\\-*/]([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\)))*$";
+        if (formula.matches(formulaRegex))
+        {
+            ans = true;
+        }
+        return ans;
     }
 
     public double computeFormula(String formula) {
@@ -158,42 +215,67 @@ public class Ex2Sheet implements Sheet {
             String b = "";
             String operator = "";
 
-            if (operatorIndex != -1) {
-                a = formula.substring(0, operatorIndex - 1);
+            if (operatorIndex != -1)
+            {
+                a = formula.substring(0, operatorIndex);
                 b = formula.substring(operatorIndex + 1);
-                operator = formula.substring(operatorIndex);
-            } else {
-                ///error
+                operator = String.valueOf(formula.charAt(operatorIndex));
             }
+
+            a= a.trim();
+            b= b.trim();
+            operator= operator.trim();
 
             double resultA = computeFormula(a);
             double resultB = computeFormula(b);
 
-            switch (operator) {
-                case "+":
-                    ans = resultA + resultB;
-                    break;
-                case "-":
-                    ans = resultA - resultB;
-                    break;
-                case "*":
-                    ans = resultA * resultB;
-                    break;
-                case "/":
-                    ans = resultA / resultB;
-                    break;
-            }
+            ans = switch (operator) {
+                case "+" -> resultA + resultB;
+                case "-" -> resultA - resultB;
+                case "*" -> resultA * resultB;
+                case "/" -> resultA / resultB;
+                default -> ans;
+            };
         }
 
         return ans;
     }
 
-    public double cutParentheses(String formula) {
-        double ans = 0;
+    public String replaceCoord(String formula)
+    {
+        String cellCoord="";
+        Pattern coordPattern = Pattern.compile("\\b[A-Z]+[0-9]+\\b");
+        Matcher matcher = coordPattern.matcher(formula);
+
+        StringBuffer newFormula = new StringBuffer();
+        while (matcher.find())
+        {
+            //get the coordinates of the cell
+            cellCoord = matcher.group();
+            Cell c= get(cellCoord);
+
+            //get the value of the cells content
+            String replacement = eval(c);
+
+            //replace the reference with the value
+            matcher.appendReplacement(newFormula, replacement);
+        }
+
+        //transfer string buffer type to string type
+        formula= String.valueOf(matcher.appendTail(newFormula));
+        return formula;
+    }
+    public String cutParentheses(String formula) {
+        String ans = "";
         int startIndex = 0;
         int endIndex = 0;
-        String[] formulaParts = new String[10];
-////////TODO replace any position string "A14" with evaL for a specific coordinate
+
+        if(formula.matches("^=.*$"))
+        {
+            formula = formula.substring(1);
+        }
+
+
         while (formula.contains("(") && formula.contains(")")) {
             for (int i = 0; i < formula.length(); i++) {
                 if (formula.charAt(i) == '(') {
@@ -206,9 +288,13 @@ public class Ex2Sheet implements Sheet {
                     break;
                 }
             }
-            formulaParts[0] = formula.substring(startIndex, endIndex);
+            String inParentheses = formula.substring(startIndex+1, endIndex-1);
+            double replacement = computeFormula(inParentheses);
+            formula =formula.substring(0, startIndex) + replacement + formula.substring(endIndex);
+
         }
 
+        ans = formula;
         return ans;
     }
 
