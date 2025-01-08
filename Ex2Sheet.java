@@ -7,9 +7,9 @@ import java.util.Hashtable;
 
 public class Ex2Sheet implements Sheet {
     private Cell[][] table;
-    // Add your code here
 
-    // ///////////////////
+    char[] supportedOperators = {'+', '-', '*', '/'};
+
     public Ex2Sheet(int x, int y) {
         table = new SCell[x][y];
         for (int i = 0; i < x; i = i + 1) {
@@ -140,15 +140,52 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
-    public boolean isNumber(String s)
-    {
+    public boolean isNumber(String s) {
         return s.matches("[^[-+]?\\d+(\\.\\d+)?$]");
     }
 
-    public double computeFormula(String formula)
-    {
+    public double computeFormula(String formula) {
+        double ans = -1;
+        if (isNumber(formula)) {
+            return Double.parseDouble(formula);
+        } else {
+            int operatorIndex = -1;
+            for (int i = 0; i < supportedOperators.length && operatorIndex == -1; i++) {
+                operatorIndex = formula.indexOf(supportedOperators[i]);
+            }
 
-        return 0;
+            String a = "";
+            String b = "";
+            String operator = "";
+
+            if (operatorIndex != -1) {
+                a = formula.substring(0, operatorIndex - 1);
+                b = formula.substring(operatorIndex + 1);
+                operator = formula.substring(operatorIndex);
+            } else {
+                ///error
+            }
+
+            double resultA = computeFormula(a);
+            double resultB = computeFormula(b);
+
+            switch (operator) {
+                case "+":
+                    ans = resultA + resultB;
+                    break;
+                case "-":
+                    ans = resultA - resultB;
+                    break;
+                case "*":
+                    ans = resultA * resultB;
+                    break;
+                case "/":
+                    ans = resultA / resultB;
+                    break;
+            }
+        }
+
+        return ans;
     }
 
     public double cutParentheses(String formula) {
@@ -165,7 +202,7 @@ public class Ex2Sheet implements Sheet {
             }
             for (int i = startIndex; i < formula.length(); i++) {
                 if (formula.charAt(i) == ')') {
-                    endIndex = i+1;
+                    endIndex = i + 1;
                     break;
                 }
             }
