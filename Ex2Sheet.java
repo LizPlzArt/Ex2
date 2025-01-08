@@ -89,6 +89,7 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
+//////TODO the algorithm is written in the Q&A section
     @Override
     public int[][] depth() {
         int[][] ans = new int[width()][height()];
@@ -111,8 +112,6 @@ public class Ex2Sheet implements Sheet {
 
         /////////////////////
     }
-
-
 
     @Override
     public String eval(int x, int y)
@@ -154,14 +153,18 @@ public class Ex2Sheet implements Sheet {
 
     }
 
-    /////TODO after I finish the String eval method
     @Override
     public void eval() {
         int[][] dd = depth();
-        // Add your code here
-
-        // ///////////////////
+        for (int i = 0; i < width(); i++)
+        {
+            for (int j = 0; j < height(); j++)
+            {
+                eval(i, j);
+            }
+        }
     }
+
 
     public static boolean isNumber(String s) {
         return s.matches("^-?\\d+(\\.\\d+)?$");
