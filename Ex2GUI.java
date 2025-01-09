@@ -105,7 +105,7 @@ public class Ex2GUI {
 		for (int x = 0; x < maxx; x = x + 1) {
 			double xc = x_start + x * x_space;
 			for (int y = 0; y < max_y; y = y + 1) {
-				String w = table.value(x, y);//""+abc[x]+y;
+				String w = table.eval(x, y);//""+abc[x]+y;
 				Cell cc = table.get(x, y);
 				int t = cc.getType();
 				StdDrawEx2.setPenColor(getColorFromType(t));

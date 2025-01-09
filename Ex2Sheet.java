@@ -1,8 +1,8 @@
 package assignments.ex2;
-
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 // Add your documentation below:
 
 public class Ex2Sheet implements Sheet {
@@ -107,7 +107,7 @@ public class Ex2Sheet implements Sheet {
             {
                 for (int y = 0; y < height(); y++)
                 {
-                    if(canBeComputed(get(x,y)))
+                    if(canBeComputed(x,y))
                     {
                         ans[x][y] = depth;
                         count++;
@@ -171,21 +171,21 @@ public class Ex2Sheet implements Sheet {
     public String eval(String formula)
     {
         String ans = formula;
-        ans = replaceCoord(ans);
-        ans = cutParentheses(ans);
-        ans = String.valueOf(computeFormula(ans));
-        return ans;
+        String ans1 = cutParentheses(ans);
+        String ans2 = replaceCoord(ans1);
+        String ans3 = String.valueOf(computeFormula(ans2));
+        return ans3;
 
     }
 
     @Override
     public void eval() {
         int[][] dd = depth();
-        for (int i = 0; i < width(); i++)
+        for (int x = 0; x < width(); x++)
         {
-            for (int j = 0; j < height(); j++)
+            for (int y = 0; y < height(); y++)
             {
-                eval(i, j);
+                eval(x, y);
             }
         }
     }
@@ -229,7 +229,7 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
-    public double computeFormula(String formula) {
+    public static double computeFormula(String formula) {
         double ans = -1;
         if (isNumber(formula)) {
             return Double.parseDouble(formula);
@@ -269,6 +269,7 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
+/////TODO works in tests, doesnt work in spreadsheet    
     public String replaceCoord(String formula)
     {
         String cellCoord="";
@@ -281,9 +282,11 @@ public class Ex2Sheet implements Sheet {
             //get the coordinates of the cell
             cellCoord = matcher.group();
             Cell c= get(cellCoord);
+            String b = c.getData();
+////////TODO found the problem. it gets fucked up if the cell doesnt exist
 
             //get the value of the cells content
-            String replacement = eval(c);
+            String replacement = String.valueOf(c.getData());
 
             //replace the reference with the value
             matcher.appendReplacement(newFormula, replacement);
@@ -293,7 +296,8 @@ public class Ex2Sheet implements Sheet {
         formula= String.valueOf(matcher.appendTail(newFormula));
         return formula;
     }
-    public String cutParentheses(String formula) {
+
+    public static String cutParentheses(String formula) {
         String ans = "";
         int startIndex = 0;
         int endIndex = 0;
@@ -337,10 +341,10 @@ public class Ex2Sheet implements Sheet {
         }
     }
 
-    public boolean canBeComputed(Cell c)
+    public boolean canBeComputed(int x,int y)
     {
         boolean ans = false;
-        if(isNumber(String.valueOf(c.getData())) || isNumber(String.valueOf(c.getData())))
+        if(isNumber(value(x,y)) || isNumber(value(x,y)))
         {
             ans = true;
         }

@@ -12,10 +12,18 @@ public class SCell implements Cell {
 
     @Override
     public int getOrder() {
-        // Add your code here
+        int order = 0;
+        if(Ex2Sheet.isFormula(line))
+        {
+            order = 2;
+        }
+        else if(Ex2Sheet.isNumber(line))
+        {
 
-        return 0;
-        // ///////////////////
+        }
+
+        return order;
+
     }
 
     //@Override
