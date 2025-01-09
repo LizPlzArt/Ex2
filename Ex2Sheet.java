@@ -93,9 +93,34 @@ public class Ex2Sheet implements Sheet {
     @Override
     public int[][] depth() {
         int[][] ans = new int[width()][height()];
-        // Add your code here
+        init1(ans);
 
-        // ///////////////////
+        int depth=0;
+        int count = 0;
+        int max = width()*height();
+        boolean flagC = true;
+
+        while(count<max&&flagC)
+        {
+            flagC=false;
+            for (int x = 0; x < width(); x++)
+            {
+                for (int y = 0; y < height(); y++)
+                {
+                    if(canBeComputed(get(x,y)))
+                    {
+                        ans[x][y] = depth;
+                        count++;
+                        flagC=true;
+                    }
+                }
+            }
+            depth++;
+        }
+
+
+
+
         return ans;
     }
 
@@ -298,6 +323,27 @@ public class Ex2Sheet implements Sheet {
         }
 
         ans = formula;
+        return ans;
+    }
+
+    public void init1(int[][] ans)
+    {
+        for (int x = 0; x < width(); x++)
+        {
+            for(int y = 0; y < height(); y++)
+            {
+                ans[x][y] = -1;
+            }
+        }
+    }
+
+    public boolean canBeComputed(Cell c)
+    {
+        boolean ans = false;
+        if(isNumber(String.valueOf(c.getData())) || isNumber(String.valueOf(c.getData())))
+        {
+            ans = true;
+        }
         return ans;
     }
 
