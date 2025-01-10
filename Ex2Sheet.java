@@ -1,5 +1,7 @@
 package assignments.ex2;
+
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +38,33 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
+    public int getX(String coord)
+    {
+        int X = -1;
+        if (!coord.matches("[A-Z]+\\d+")) {
+            System.out.println("invalid input");
+            return X;
+        }
+        char xChar = coord.charAt(0);
+        int x = xChar - 65;
+        if (x < 0 || x > 25) {
+            System.out.println("invalid input");
+        }
+        return X;
+    }
+
+    public int getY(String coord)
+    {
+        int Y = -1;
+        if (!coord.matches("[A-Z]+\\d+")) {
+            System.out.println("invalid input");
+            return Y;
+        }
+        String[] parts = coord.split("(?<=\\D)(?=\\d)");
+        Y = Integer.parseInt(parts[1]);
+        return Y;
+    }
+
     @Override
     public Cell get(int x, int y) {
         return table[x][y];
@@ -45,24 +74,10 @@ public class Ex2Sheet implements Sheet {
     public Cell get(String cords) {
         Cell ans = null;
 
-        //format validation
-        if (!cords.matches("[A-Z]+\\d+")) {
-            System.out.println("invalid input");
-            return ans;
-        }
+        int x = getX(cords);
+        int y = getY(cords);
 
-        char xChar = cords.charAt(0);
-        int x = xChar - 64;
-        if (x <= 0 || x > 26) {
-            System.out.println("invalid input");
-            return ans;
-        }
-
-        //split the input to letter and number
-        String[] parts = cords.split("(?<=\\D)(?=\\d)");
-        int y = Integer.parseInt(parts[1]);
         ans = get(x, y);
-
         return ans;
     }
 
@@ -89,29 +104,24 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
-//////TODO the algorithm is written in the Q&A section
+    //////TODO the algorithm is written in the Q&A section
     @Override
     public int[][] depth() {
-        int[][] ans = new int[width()][height()];
-        init1(ans);
+        int[][] depthArr = new int[width()][height()];
+        init1(depthArr);
 
-        int depth=0;
-        int count = 0;
-        int max = width()*height();
+        int depth = 0;
+        int max = width() * height();
         boolean flagC = true;
 
-        while(count<max&&flagC)
-        {
-            flagC=false;
-            for (int x = 0; x < width(); x++)
-            {
-                for (int y = 0; y < height(); y++)
-                {
-                    if(canBeComputed(x,y))
+        while (depth < max && flagC) {
+            flagC = false;
+            for (int x = 0; x < width(); x++) {
+                for (int y = 0; y < height(); y++) {
+                    if (depthArr[x][y]==-1 && canBeComputedNow(x, y, depth, depthArr))
                     {
-                        ans[x][y] = depth;
-                        count++;
-                        flagC=true;
+                        depthArr[x][y] = depth;
+                        flagC = true;
                     }
                 }
             }
@@ -119,9 +129,7 @@ public class Ex2Sheet implements Sheet {
         }
 
 
-
-
-        return ans;
+        return depthArr;
     }
 
     @Override
@@ -139,41 +147,37 @@ public class Ex2Sheet implements Sheet {
     }
 
     @Override
-    public String eval(int x, int y)
-    {
+    public String eval(int x, int y) {
         Cell c = get(x, y);
         return eval(c);
     }
 
-    public String eval(Cell c)
-    {
+    public String eval(Cell c) {
         String ans = "";
 
-        if (c != null)
-        {
+        if (c != null) {
             ans = c.getData();
         }
-        if (isFormula(ans))
-        {
+        if (isFormula(ans)) {
             return eval(ans);
         }
-        if (isCoordinate(ans))
-        {
+        if (isCoordinate(ans)) {
             return replaceCoord(ans);
-        }
-        else
-        {
+        } else {
             return ans;
         }
 
     }
 
-    public String eval(String formula)
-    {
+    public String eval(String formula) {
         String ans = formula;
         String ans1 = cutParentheses(ans);
         String ans2 = replaceCoord(ans1);
         String ans3 = String.valueOf(computeFormula(ans2));
+        if (ans2.equals("-2")) {
+            ans3 = Ex2Utils.ERR_FORM;
+        }
+
         return ans3;
 
     }
@@ -181,10 +185,8 @@ public class Ex2Sheet implements Sheet {
     @Override
     public void eval() {
         int[][] dd = depth();
-        for (int x = 0; x < width(); x++)
-        {
-            for (int y = 0; y < height(); y++)
-            {
+        for (int x = 0; x < width(); x++) {
+            for (int y = 0; y < height(); y++) {
                 eval(x, y);
             }
         }
@@ -195,35 +197,26 @@ public class Ex2Sheet implements Sheet {
         return s.matches("^-?\\d+(\\.\\d+)?$");
     }
 
-    public static boolean isCoordinate(String s)
-    {
+    public static boolean isCoordinate(String s) {
         return s.matches("\\b[A-Z]+[0-9]+\\b");
     }
 
-    public boolean isText(String s)
-    {
+    public boolean isText(String s) {
         boolean ans = true;
-        if(Ex2Sheet.isNumber(s))
-        {
-            ans=false;
-        }
-        else if (Ex2Sheet.isCoordinate(s))
-        {
-            ans=false;
-        }
-        else if(Ex2Sheet.isFormula(s))
-        {
-            ans=false;
+        if (Ex2Sheet.isNumber(s)) {
+            ans = false;
+        } else if (Ex2Sheet.isCoordinate(s)) {
+            ans = false;
+        } else if (Ex2Sheet.isFormula(s)) {
+            ans = false;
         }
         return ans;
     }
 
-    public static boolean isFormula(String formula)
-    {
-        boolean ans= false;
+    public static boolean isFormula(String formula) {
+        boolean ans = false;
         String formulaRegex = "^=\\s*([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\))([+\\-*/]([A-Z]+\\d+|\\d+(\\.\\d+)?|\\([\\s\\S]+\\)))*$";
-        if (formula.matches(formulaRegex))
-        {
+        if (formula.matches(formulaRegex)) {
             ans = true;
         }
         return ans;
@@ -231,6 +224,10 @@ public class Ex2Sheet implements Sheet {
 
     public static double computeFormula(String formula) {
         double ans = -1;
+        if (Objects.equals(formula, "")) {
+            return -2;
+        }
+
         if (isNumber(formula)) {
             return Double.parseDouble(formula);
         } else {
@@ -243,16 +240,15 @@ public class Ex2Sheet implements Sheet {
             String b = "";
             String operator = "";
 
-            if (operatorIndex != -1)
-            {
+            if (operatorIndex != -1) {
                 a = formula.substring(0, operatorIndex);
                 b = formula.substring(operatorIndex + 1);
                 operator = String.valueOf(formula.charAt(operatorIndex));
             }
 
-            a= a.trim();
-            b= b.trim();
-            operator= operator.trim();
+            a = a.trim();
+            b = b.trim();
+            operator = operator.trim();
 
             double resultA = computeFormula(a);
             double resultB = computeFormula(b);
@@ -269,31 +265,80 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
-/////TODO works in tests, doesnt work in spreadsheet    
-    public String replaceCoord(String formula)
+    public static boolean containsCoords(String formula)
     {
-        String cellCoord="";
+        boolean ans = false;
+        Matcher matcher = getCoordsMatcher(formula);
+        if(matcher.find())
+        {
+            ans = true;
+        }
+        return ans;
+    }
+
+    public static Matcher getCoordsMatcher(String formula)
+    {
         Pattern coordPattern = Pattern.compile("\\b[A-Z]+[0-9]+\\b");
         Matcher matcher = coordPattern.matcher(formula);
+        return matcher;
+    }
 
-        StringBuffer newFormula = new StringBuffer();
-        while (matcher.find())
+    public static String extractCoords(String formula)
+    {
+        Matcher matcher = getCoordsMatcher(formula);
+        matcher.find();
+        String ans = matcher.group();
+        return  ans;
+    }
+
+    public static String[] extractAllCoords(String formula)
+    {
+        Matcher matcher = getCoordsMatcher(formula);
+        int counter=0;
+        for(int i=0;i<formula.length();i++)
         {
+            if(matcher.find())
+            {
+                counter++;
+            }
+        }
+
+        Matcher newMatcher = getCoordsMatcher(formula);
+
+        String[] ans = new String[counter];
+        for(int i=0;i<formula.length();i++)
+        {
+            if(newMatcher.find())
+            {
+                ans[i] = newMatcher.group();
+            }
+        }
+        return ans;
+    }
+
+    public String replaceCoord(String formula) {
+        String cellCoord = "";
+        StringBuffer newFormula = new StringBuffer();
+        Matcher matcher = getCoordsMatcher(formula);
+
+        while (containsCoords(formula)) {
             //get the coordinates of the cell
-            cellCoord = matcher.group();
-            Cell c= get(cellCoord);
-            String b = c.getData();
-////////TODO found the problem. it gets fucked up if the cell doesnt exist
+            cellCoord = extractCoords(formula);
+            Cell c = get(cellCoord);
 
             //get the value of the cells content
-            String replacement = String.valueOf(c.getData());
+            String replacement = (String.valueOf(c.getData()));
+            if (!(isFormula(replacement)||isNumber(replacement))) {
+                return "-2";
+            }
+            replacement = eval(replacement);
 
             //replace the reference with the value
             matcher.appendReplacement(newFormula, replacement);
         }
 
         //transfer string buffer type to string type
-        formula= String.valueOf(matcher.appendTail(newFormula));
+        formula = String.valueOf(matcher.appendTail(newFormula));
         return formula;
     }
 
@@ -302,8 +347,7 @@ public class Ex2Sheet implements Sheet {
         int startIndex = 0;
         int endIndex = 0;
 
-        if(formula.matches("^=.*$"))
-        {
+        if (formula.matches("^=.*$")) {
             formula = formula.substring(1);
         }
 
@@ -320,9 +364,9 @@ public class Ex2Sheet implements Sheet {
                     break;
                 }
             }
-            String inParentheses = formula.substring(startIndex+1, endIndex-1);
+            String inParentheses = formula.substring(startIndex + 1, endIndex - 1);
             double replacement = computeFormula(inParentheses);
-            formula =formula.substring(0, startIndex) + replacement + formula.substring(endIndex);
+            formula = formula.substring(0, startIndex) + replacement + formula.substring(endIndex);
 
         }
 
@@ -330,24 +374,49 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
 
-    public void init1(int[][] ans)
-    {
-        for (int x = 0; x < width(); x++)
-        {
-            for(int y = 0; y < height(); y++)
-            {
+    public void init1(int[][] ans) {
+        for (int x = 0; x < width(); x++) {
+            for (int y = 0; y < height(); y++) {
                 ans[x][y] = -1;
             }
         }
     }
 
-    public boolean canBeComputed(int x,int y)
-    {
+    public boolean canBeComputedNow(int x, int y, int myDepth, int[][] depthArr) {
         boolean ans = false;
-        if(isNumber(value(x,y)) || isNumber(value(x,y)))
+        String content = value(x, y);
+
+        if (!isFormula(content))
         {
-            ans = true;
+            if (myDepth == 0 && (isNumber(content) || isText(content))) {
+                ans = true;
+            }
+            else
+            {
+//////TODO then wtf is it
+            }
         }
+        else if (!containsCoords(content)) {
+            if(myDepth==1 && isFormula(content))
+            {
+                ans = true;
+            }
+        }
+        else
+        {
+            String[] coordsArr = extractAllCoords(content);
+            for(int i=0; i<coordsArr.length; i++)
+            {
+                int coordX = getX(coordsArr[i]);
+                int coordY = getY(coordsArr[i]);
+                int depthOfCoord= depthArr[coordX][coordY];
+                if(depthOfCoord==-1)
+                {
+                    return false;
+                }
+            }
+        }
+
         return ans;
     }
 

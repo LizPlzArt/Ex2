@@ -131,5 +131,39 @@ public class ex2Test {
         assertEquals(strc, "5");
         assertEquals(strd, "10");
     }
+
+    @Test
+    void extractAllCoordsTest()
+    {
+        String coords = "=A3+A2+A1+A0";
+        String[] allcoords = Ex2Sheet.extractAllCoords(coords);
+        assertEquals(allcoords[0], "A3");
+        assertEquals(allcoords[1], "A2");
+        assertEquals(allcoords[2], "A1");
+        assertEquals(allcoords[3], "A0");
+
+    }
+
+    //this works, great!
+    @Test
+    void containsCoordsTest()
+    {
+        String[] coordsTest = {"=A3+A2+A1+A0", "6","6+G6","=15*9","=5-B8"};
+        boolean[] boolArr = {true,false,true,false,true};
+        for(int i=0;i<coordsTest.length;i++)
+        {
+            boolean contains = Ex2Sheet.containsCoords(coordsTest[i]);
+            assertEquals(contains, boolArr[i]);
+        }
+    }
+
+    @Test
+    void extractCoordsTest()
+    {
+        String coordString = "=A3+A2+A1+A0";
+        String coords = Ex2Sheet.extractCoords(coordString);
+        assertEquals(coords, "A3");
+
+    }
 }
 
