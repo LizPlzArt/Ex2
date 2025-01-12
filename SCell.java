@@ -5,8 +5,9 @@ public class SCell implements Cell {
     private String line;
     private int type;
 
+
     public SCell(String s) {
-        // Add your code here
+
         setData(s);
     }
 
@@ -56,4 +57,5 @@ public void setData(String s) {
         // Add your code here
 
     }
+
 }

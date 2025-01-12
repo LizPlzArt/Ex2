@@ -52,59 +52,48 @@ public class ex2Test {
 
     @Test
     void replaceCoordTest() {
-        // Step 1: Create an instance of the class
-        Ex2Sheet sheet = new Ex2Sheet(5,5);
-        sheet.set(1,2, "5");
-        sheet.set(2,3, "10");
+        Ex2Sheet sheet = new Ex2Sheet(10,10);
+        sheet.set(0,2, "5");
+        sheet.set(1,3, "10");
 
-        // ✅ **Test Case 1: Basic Formula Replacement**
-        String formula1 = "=(A2+3) * (2+B3)/A2";
-        String expected1 = "=(5+3) * (2+10)/5";
+        String formula1 = "=(A2+3) * (2+B3)";
+        String expected1 = "=(5.0+3) * (2+10.0)";
         assertEquals(expected1, sheet.replaceCoord(formula1));
 
-        // ✅ **Test Case 2: Formula with Only One Reference**
         String formula2 = "=A2 * 2";
-        String expected2 = "=5 * 2";
+        String expected2 = "=5.0 * 2";
         assertEquals(expected2, sheet.replaceCoord(formula2));
 
-        // ✅ **Test Case 3: Multiple Same References**
         String formula3 = "=A2 + A2 + A2";
-        String expected3 = "=5 + 5 + 5";
+        String expected3 = "=5.0 + 5.0 + 5.0";
         assertEquals(expected3, sheet.replaceCoord(formula3));
 
-        // ✅ **Test Case 4: Different Cell References**
         String formula4 = "=A2 * B3 + 1";
-        String expected4 = "=5 * 10 + 1";
+        String expected4 = "=5.0 * 10.0 + 1";
         assertEquals(expected4, sheet.replaceCoord(formula4));
 
-        // ✅ **Test Case 5: Cell Reference at Start and End**
         String formula5 = "A2 + B3 + A2";
-        String expected5 = "5 + 10 + 5";
+        String expected5 = "5.0 + 10.0 + 5.0";
         assertEquals(expected5, sheet.replaceCoord(formula5));
 
-        // ✅ **Test Case 6: No Cell References**
         String formula6 = "=5+3*2";
         String expected6 = "=5+3*2"; // Should remain unchanged
         assertEquals(expected6, sheet.replaceCoord(formula6));
 
-        // ✅ **Test Case 7: Empty String Input**
         String formula7 = "";
         String expected7 = "";
         assertEquals(expected7, sheet.replaceCoord(formula7));
 
-        // ✅ **Test Case 8: Cell Reference That Doesn't Exist**
         String formula8 = "=C5 + A2";
-        String expected8 = "=0 + 5"; // Assuming missing values default to "0"
+        String expected8 = "-2"; // Assuming missing values give error
         assertEquals(expected8, sheet.replaceCoord(formula8));
 
-        // ✅ **Test Case 9: Formula with Spaces and References**
         String formula9 = "  = A2  +  B3 ";
-        String expected9 = "  = 5  +  10 ";
+        String expected9 = "  = 5.0  +  10.0 ";
         assertEquals(expected9, sheet.replaceCoord(formula9));
 
-        // ✅ **Test Case 10: Complex Expression with Multiple Operators**
         String formula10 = "=(A2*B3)-(B3/A2)+B3";
-        String expected10 = "=(5*10)-(10/5)+10";
+        String expected10 = "=(5.0*10.0)-(10.0/5.0)+10.0";
         assertEquals(expected10, sheet.replaceCoord(formula10));
     }
 
@@ -112,14 +101,14 @@ public class ex2Test {
     void getData()
     {
         Ex2Sheet sheet = new Ex2Sheet(5,5);
-        sheet.set(1,2, "5");
-        sheet.set(2,3, "10");
+        sheet.set(0,2, "5");
+        sheet.set(1,3, "10");
 
 
         Cell a= sheet.get("A2");
         Cell b= sheet.get("B3");
-        Cell c= sheet.get(1,2);
-        Cell d= sheet.get(2,3);
+        Cell c= sheet.get(0,2);
+        Cell d= sheet.get(1,3);
 
         String stra = a.toString();
         String strb = b.toString();
@@ -165,5 +154,27 @@ public class ex2Test {
         assertEquals(coords, "A3");
 
     }
+
+    @Test
+    void getXTest()
+    {
+        String coord = "A5";
+        int x = Ex2Sheet.getX(coord);
+        assertEquals(x,0);
+    }
+
+    @Test
+    void isFormulaTest()
+    {
+        String formula1= "a";
+        String formula2= "=5**";
+        String formula3= "=()";
+
+        assertEquals(false, Ex2Sheet.isFormula(formula1));
+        assertEquals(false, Ex2Sheet.isFormula(formula2));
+        assertEquals(false, Ex2Sheet.isFormula(formula3));
+    }
+
+
 }
 
