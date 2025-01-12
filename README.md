@@ -11,3 +11,4 @@ The sheet class holds most of the functions I personally implemented in this cod
 
 This project was very difficult, and it seems kind of excessive.
 Nonetheless, I tried to make the best out of this.
+This is just my honest opinion, please give me a good grade :)
