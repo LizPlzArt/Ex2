@@ -18,3 +18,5 @@ The core functionality is implemented in the Sheet class, which manages cell dat
 This project was very difficult, and it seems kind of excessive.
 I did my best to implement the required features while maintaining good programming practices.
 This is just my honest opinion, please give me a good grade :)
+
+![Capture.PNG](https://github.com/LizPlzArt/Ex2/blob/main/Capture.PNG)
