@@ -1,7 +1,7 @@
 # Ex2
 Ex 2 year 1 semester 1 Java - Simple spreadsheet
 
-This Java project implements a basic spreadsheet application that allows users to input and manipulate data in a tabular format. this is an excersize in object oriented programing. The following features are implemented:
+This Java project implements a basic spreadsheet application that allows users to input and manipulate data in a tabular format. this is an exercise in object oriented programing. The following features are implemented:
 
     1.Data Entry: Supports numbers, text, and formulas.
     
